@@ -1104,8 +1104,8 @@ def sample_sa_solver(model, x, sigmas, extra_args=None, callback=None, disable=F
 
             # Predictor step
             x_p = sa_solver.adams_bashforth_update_few_steps(order=predictor_order_used, x=x, tau=tau_val,
-                                                            model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
-                                                            noise=noise, sigma=sigma)
+                                                             model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
+                                                             noise=noise, sigma=sigma)
 
             # Evaluation step
             denoised = model(x_p, sigma * s_in, **extra_args)
@@ -1116,8 +1116,8 @@ def sample_sa_solver(model, x, sigmas, extra_args=None, callback=None, disable=F
             # Corrector step
             if corrector_order_used > 0:
                 x = sa_solver.adams_moulton_update_few_steps(order=corrector_order_used, x=x, tau=tau_val,
-                                                            model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
-                                                            noise=noise, sigma=sigma)
+                                                             model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
+                                                             noise=noise, sigma=sigma)
                                                    
             else:
                 x = x_p
@@ -1140,8 +1140,8 @@ def sample_sa_solver(model, x, sigmas, extra_args=None, callback=None, disable=F
 
     # Extra final step
     x = sa_solver.adams_bashforth_update_few_steps(order=1, x=x, tau=0,
-                                                    model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
-                                                    noise=0, sigma=sigmas[-1])
+                                                   model_prev_list=model_prev_list, sigma_prev_list=sigma_prev_list,
+                                                   noise=0, sigma=sigmas[-1])
     return x
 
 @torch.no_grad()

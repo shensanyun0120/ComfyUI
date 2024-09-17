@@ -150,7 +150,7 @@ def adams_moulton_update_few_steps(order, x, tau, model_prev_list, sigma_prev_li
     sigma_list = sigma_prev_list + [sigma]
     lambda_list = [t_fn(sigma_list[-(i + 1)]) for i in range(order)]
     lambda_t = lambda_list[0]
-    lambda_prev = lambda_list[1]
+    lambda_prev = lambda_list[1] if order >= 2 else t_fn(sigma_prev)
     h = lambda_t - lambda_prev
     gradient_coefficients = get_coefficients_fn(order, lambda_prev, lambda_t, lambda_list, tau)
     
