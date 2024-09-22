@@ -1096,7 +1096,7 @@ def sample_sa_solver(model, x, sigmas, extra_args=None, callback=None, disable=F
             sigma_prev_list.append(sigma)
         else:
             # Lower order final
-            predictor_order_used = min(predictor_order, i, len(sigmas) - i)
+            predictor_order_used = min(predictor_order, i, len(sigmas) - i - 1)
             corrector_order_used = min(corrector_order, i + 1, len(sigmas) - i + 1)
             
             tau_val = tau(sigma)
