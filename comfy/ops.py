@@ -260,7 +260,6 @@ def fp8_linear(self, input):
 
     if len(input.shape) == 3:
         inn = input.reshape(-1, input.shape[2]).to(dtype)
-        non_blocking = comfy.model_management.device_supports_non_blocking(input.device)
         w, bias = cast_bias_weight(self, input, dtype=dtype, bias_dtype=input.dtype)
         w = w.t()
 
@@ -300,7 +299,11 @@ class fp8_ops(manual_cast):
             return torch.nn.functional.linear(input, weight, bias)
 
 
-def pick_operations(weight_dtype, compute_dtype, load_device=None, disable_fast_fp8=False):
+def pick_operations(weight_dtype, compute_dtype, load_device=None, disable_fast_fp8=False, fp8_optimizations=False):
+    if comfy.model_management.supports_fp8_compute(load_device):
+        if (fp8_optimizations or args.fast) and not disable_fast_fp8:
+            return fp8_ops
+
     if compute_dtype is None or weight_dtype == compute_dtype:
         return disable_weight_init
     if args.fast and not disable_fast_fp8:
