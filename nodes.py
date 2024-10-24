@@ -1097,7 +1097,6 @@ class EmptyLatentImage:
         latent = torch.zeros([batch_size, 4, height // 8, width // 8], device=self.device)
         return ({"samples":latent}, )
 
-
 class LatentFromBatch:
     @classmethod
     def INPUT_TYPES(s):
@@ -1690,6 +1689,28 @@ class ImageScale:
             s = s.movedim(1,-1)
         return (s,)
 
+class ImageAlphaComposite:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": { "image1": ("IMAGE",),
+                             "mask": ("MASK",),
+                             "image2": ("IMAGE",)
+                             }
+               }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "alpha_composite"
+    def alpha_composite(self, image1, mask, image2):
+        mask1 = torch.ones_like(image1)
+        mask1[0, :, :, 0] = mask
+        mask1[0, :, :, 1] = mask
+        mask1[0, :, :, 2] = mask
+        
+        image = image1 * (torch.ones_like(mask1) - mask1) + image2 * mask1
+        return (image,)
+
 class ImageScaleBy:
     upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic", "lanczos"]
 
@@ -1846,6 +1867,7 @@ NODE_CLASS_MAPPINGS = {
     "PreviewImage": PreviewImage,
     "LoadImage": LoadImage,
     "LoadImageMask": LoadImageMask,
+    "ImageAlphaComposite": ImageAlphaComposite,
     "ImageScale": ImageScale,
     "ImageScaleBy": ImageScaleBy,
     "ImageInvert": ImageInvert,
@@ -1946,6 +1968,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PreviewImage": "Preview Image",
     "LoadImage": "Load Image",
     "LoadImageMask": "Load Image (as Mask)",
+    "ImageAlphaComposite": "Image overlay using mask",
     "ImageScale": "Upscale Image",
     "ImageScaleBy": "Upscale Image By",
     "ImageUpscaleWithModel": "Upscale Image (using Model)",
